@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.financialcheat.common.ErrorCode;
 import com.example.financialcheat.exception.BusinessException;
-import com.example.financialcheat.model.User;
+import com.example.financialcheat.model.entity.User;
 import com.example.financialcheat.service.UserService;
 import com.example.financialcheat.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -95,7 +95,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             if (!saveResult) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");
             }
-            return user.getId();
+            return true;
         }
     }
 }

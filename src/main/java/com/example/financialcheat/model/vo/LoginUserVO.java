@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class LoginUserVO {
+    private Long userId;
     /**
      * 账号
      */

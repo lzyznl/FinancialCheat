@@ -27,12 +27,12 @@ public class Knife4jConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(new ApiInfoBuilder()
                         .title("接口文档")
-                        .description("springboot-init")
+                        .description("服务外包-金融防欺诈项目")
                         .version("1.0")
                         .build())
                 .select()
                 // 指定 Controller 扫描包路径
-                .apis(RequestHandlerSelectors.basePackage("com.yupi.springbootinit.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.example.financialcheat.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }

@@ -4,8 +4,11 @@ import com.example.financialcheat.common.BaseResponse;
 import com.example.financialcheat.common.ErrorCode;
 import com.example.financialcheat.common.ResultUtils;
 import com.example.financialcheat.exception.BusinessException;
+import com.example.financialcheat.model.dto.project.ProjectAddRequest;
+import com.example.financialcheat.model.dto.user.UserLoginRequest;
 import com.example.financialcheat.model.dto.user.UserRegisterRequest;
 import com.example.financialcheat.service.UserService;
+import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+@Api(tags = "用户管理器")
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -50,7 +54,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/login")
-    public BaseResponse<LoginUserVO> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
+    public BaseResponse<String> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         if (userLoginRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -59,7 +63,9 @@ public class UserController {
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        LoginUserVO loginUserVO = userService.userLogin(userAccount, userPassword, request);
-        return ResultUtils.success(loginUserVO);
+        return userService.userLogin(userAccount, userPassword, request)?
+                ResultUtils.success("登录成功！"):ResultUtils.error(ErrorCode.OPERATION_ERROR,"登录失败！");
     }
+
+
 }

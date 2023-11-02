@@ -1,4 +1,4 @@
-package com.example.financialcheat.model;
+package com.example.financialcheat.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 
