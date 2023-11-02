@@ -2,6 +2,7 @@ package com.example.financialcheat.service;
 
 import com.example.financialcheat.model.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.financialcheat.model.vo.SafetyUser;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -30,5 +31,7 @@ public interface UserService extends IService<User> {
      * @return 新用户 id
      */
     boolean userRegister(String userAccount, String userPassword, String checkPassword);
+
+    SafetyUser getSafetyUser(User user);
 
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.financialcheat.common.ErrorCode;
 import com.example.financialcheat.exception.BusinessException;
 import com.example.financialcheat.model.entity.User;
+import com.example.financialcheat.model.vo.SafetyUser;
 import com.example.financialcheat.service.UserService;
 import com.example.financialcheat.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -57,7 +58,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在或密码错误");
         }
         // 3. 记录用户的登录态
-        request.getSession().setAttribute(USER_LOGIN_STATE, user);
+        request.getSession().setAttribute(USER_LOGIN_STATE, getSafetyUser(user));
         return true;
     }
 
@@ -97,6 +98,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             }
             return true;
         }
+    }
+
+    @Override
+    public SafetyUser getSafetyUser(User user) {
+        SafetyUser safetyUser = new SafetyUser();
+        safetyUser.setUserId(user.getId());
+        safetyUser.setUserAccount(user.getUserAccount());
+        return safetyUser;
+
     }
 }
 
