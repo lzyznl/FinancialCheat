@@ -5,14 +5,17 @@
 <mapper namespace="com.example.financialcheat.mapper.UserProjectRelationShipMapper">
 
     <resultMap id="BaseResultMap" type="com.example.financialcheat.model.relationShip.UserProjectRelationShip">
-            <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="userId" column="userId" jdbcType="BIGINT"/>
-            <result property="projectId" column="projectId" jdbcType="BIGINT"/>
-            <result property="position" column="position" jdbcType="TINYINT"/>
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="userId" column="userId" jdbcType="BIGINT"/>
+        <result property="projectId" column="projectId" jdbcType="BIGINT"/>
+        <result property="position" column="position" jdbcType="TINYINT"/>
+        <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,userId,projectId,
-        position
+        id
+        ,userId,projectId,
+        position,
+        isDelete
     </sql>
 </mapper>

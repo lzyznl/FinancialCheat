@@ -19,10 +19,6 @@ public class Project implements Serializable {
     @TableId(type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 隶属团队
-     */
-    private Long teamId;
 
     /**
      * 项目名称

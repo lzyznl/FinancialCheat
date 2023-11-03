@@ -6,8 +6,9 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 
+
 //写好了拦截器之后还不行，还需要在config里配置进来
-@Configuration
+//@Configuration
 public class MvcConfig implements WebMvcConfigurer {
 
     @Override
@@ -17,8 +18,7 @@ public class MvcConfig implements WebMvcConfigurer {
                 //排除不需要拦截的路径
                 .excludePathPatterns(
                         "/user/login",
-                        "/user/register",
-                        "/doc.html"
+                        "/user/register"
                 ).order(0);
     }
 

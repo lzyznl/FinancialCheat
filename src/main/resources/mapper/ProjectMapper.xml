@@ -6,7 +6,6 @@
 
     <resultMap id="BaseResultMap" type="com.example.financialcheat.model.entity.Project">
             <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="teamId" column="teamId" jdbcType="BIGINT"/>
             <result property="projectName" column="projectName" jdbcType="VARCHAR"/>
             <result property="projectProfile" column="projectProfile" jdbcType="VARCHAR"/>
             <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
@@ -15,7 +14,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,teamId,projectName,
+        id,projectName,
         projectProfile,createTime,updateTime,
         isDelete
     </sql>

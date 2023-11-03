@@ -2,8 +2,10 @@ package com.example.financialcheat.service;
 
 import com.example.financialcheat.model.entity.Project;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.financialcheat.model.vo.ProjectVO;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
 * @author 宇宙无敌超级大帅哥
@@ -18,5 +20,19 @@ public interface ProjectService extends IService<Project> {
      * @return
      */
     boolean addProject(String projectName, int position, HttpServletRequest request);
+
+    /**
+     * 根据项目id删除项目，顺便把对应的关系也删了
+     * @param projectId
+     * @return
+     */
+    boolean delProject(Long projectId,HttpServletRequest request);
+
+    /**
+     * 获取用户参与的所有项目
+     * @param userId
+     * @return
+     */
+    List<ProjectVO> getProjects(Long userId);
 
 }

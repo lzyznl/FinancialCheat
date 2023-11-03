@@ -1,16 +1,19 @@
 package com.example.financialcheat.service.impl;
 import java.util.Date;
+import java.util.List;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.financialcheat.model.entity.Project;
 import com.example.financialcheat.model.entity.User;
 import com.example.financialcheat.model.relationShip.UserProjectRelationShip;
+import com.example.financialcheat.model.vo.ProjectVO;
 import com.example.financialcheat.model.vo.SafetyUser;
 import com.example.financialcheat.service.ProjectService;
 import com.example.financialcheat.mapper.ProjectMapper;
 import com.example.financialcheat.service.UserProjectRelationShipService;
 import com.example.financialcheat.service.UserService;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -61,6 +64,37 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project>
             return false;
         }
         return true;
+    }
+
+    @Override
+    public boolean delProject(Long projectId,HttpServletRequest request) {
+        SafetyUser user = userService.getLoginUser(request);
+        Long userId = user.getUserId();
+        boolean isDel = this.update().eq("id", projectId)
+                .set("isDelete", 1)
+                .update();
+        if(!isDel){
+            return false;
+        }
+        boolean isDelShip = userProjectRelationShipService.update()
+                .eq("userId", userId)
+                .eq("projectId", projectId)
+                .set("isDelete", 1)
+                .update();
+        if (!isDelShip){
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public List<ProjectVO> getProjects(Long userId) {
+        MPJLambdaWrapper<Project> wrapper = new MPJLambdaWrapper<Project>()
+                .select(Project::getId, Project::getProjectName)
+                .select(UserProjectRelationShip::getPosition)
+                .leftJoin(UserProjectRelationShip.class, UserProjectRelationShip::getProjectId, Project::getId)
+                .eq(UserProjectRelationShip::getUserId, userId);
+        return projectMapper.selectJoinList(ProjectVO.class, wrapper);
     }
 }
 
