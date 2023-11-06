@@ -12,8 +12,22 @@
             <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
     </resultMap>
 
+    <resultMap id="memberVOResultMap" type="com.example.financialcheat.model.vo.MemberVo.MemberVO">
+        <result property="userId" column="userId" />
+        <result property="username" column="username" />
+        <result property="position" column="position" />
+        <result property="joinTime" column="joinTime" />
+    </resultMap>
+
     <sql id="Base_Column_List">
         id,userAccount,userPassword,
         createTime,isDelete
     </sql>
+
+    <select id="getMembersByProjectId" parameterType="integer" resultMap="memberVOResultMap">
+        SELECT t.id AS userId, t.userAccount AS username, t1.position, t.createTime AS joinTime
+        FROM User t
+                 LEFT JOIN UserProjectRelationShip t1 ON (t1.userId = t.id AND t1.isDelete = 0)
+        WHERE t1.projectId = #{projectId} AND t.isDelete = 0;
+    </select>
 </mapper>

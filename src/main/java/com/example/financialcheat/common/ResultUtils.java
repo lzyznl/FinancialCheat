@@ -23,6 +23,10 @@ public class ResultUtils {
         return new BaseResponse<>(200, null, msg);
     }
 
+    public static <T> BaseResponse<T> success(T data,String msg) {
+        return new BaseResponse<>(200, data, msg);
+    }
+
     /**
      * 失败
      *

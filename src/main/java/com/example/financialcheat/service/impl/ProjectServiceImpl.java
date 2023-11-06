@@ -1,13 +1,14 @@
 package com.example.financialcheat.service.impl;
-import java.util.Date;
 import java.util.List;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.financialcheat.mapper.UserMapper;
+import com.example.financialcheat.mapper.UserProjectRelationShipMapper;
 import com.example.financialcheat.model.entity.Project;
-import com.example.financialcheat.model.entity.User;
 import com.example.financialcheat.model.relationShip.UserProjectRelationShip;
-import com.example.financialcheat.model.vo.ProjectVO;
+import com.example.financialcheat.model.vo.MemberVo.MemberVO;
+import com.example.financialcheat.model.vo.ProjectVo.ProjectVO;
 import com.example.financialcheat.model.vo.SafetyUser;
 import com.example.financialcheat.service.ProjectService;
 import com.example.financialcheat.mapper.ProjectMapper;
@@ -33,6 +34,11 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project>
     @Resource
     private ProjectMapper projectMapper;
 
+    @Resource
+    private UserMapper userMapper;
+
+    @Resource
+    private UserProjectRelationShipMapper userProjectRelationShipMapper;
 
     @Resource
     private UserService userService;
@@ -70,21 +76,18 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project>
     public boolean delProject(Long projectId,HttpServletRequest request) {
         SafetyUser user = userService.getLoginUser(request);
         Long userId = user.getUserId();
-        boolean isDel = this.update().eq("id", projectId)
+        boolean isDel = this.update()
+                .eq("id", projectId)
                 .set("isDelete", 1)
                 .update();
         if(!isDel){
             return false;
         }
-        boolean isDelShip = userProjectRelationShipService.update()
+        return userProjectRelationShipService.update()
                 .eq("userId", userId)
                 .eq("projectId", projectId)
                 .set("isDelete", 1)
                 .update();
-        if (!isDelShip){
-            return false;
-        }
-        return true;
     }
 
     @Override
@@ -96,6 +99,29 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project>
                 .eq(UserProjectRelationShip::getUserId, userId);
         return projectMapper.selectJoinList(ProjectVO.class, wrapper);
     }
+
+    @Override
+    public List<MemberVO> getMembers(Integer projectId) {
+        return userMapper.getMembersByProjectId(projectId);
+    }
+
+    @Override
+    public boolean deleteUserProjectRelationShip(Integer projectId, Integer userId) {
+        QueryWrapper<UserProjectRelationShip> wrapper=new QueryWrapper<>();
+        wrapper.eq("projectId",projectId);
+        wrapper.eq("userId",userId);
+        long isExist = userProjectRelationShipService.count(wrapper);
+        if(isExist==0){
+            return false;
+        }
+        return userProjectRelationShipService.update()
+                .eq("projectId", projectId)
+                .eq("userId", userId)
+                .set("isDelete", 1)
+                .update();
+    }
+
+
 }
 
 

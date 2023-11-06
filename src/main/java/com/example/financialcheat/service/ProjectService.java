@@ -2,7 +2,8 @@ package com.example.financialcheat.service;
 
 import com.example.financialcheat.model.entity.Project;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.example.financialcheat.model.vo.ProjectVO;
+import com.example.financialcheat.model.vo.MemberVo.MemberVO;
+import com.example.financialcheat.model.vo.ProjectVo.ProjectVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -34,5 +35,20 @@ public interface ProjectService extends IService<Project> {
      * @return
      */
     List<ProjectVO> getProjects(Long userId);
+
+    /**
+     * 获取项目里的所有成员
+     * @param projectId
+     * @return
+     */
+    List<MemberVO> getMembers(Integer projectId);
+
+    /**
+     * 删除projectId和userId的对应关系
+     * @param projectId
+     * @param userId
+     * @return
+     */
+    boolean deleteUserProjectRelationShip(Integer projectId,Integer userId);
 
 }

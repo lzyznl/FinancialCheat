@@ -2,6 +2,7 @@ package com.example.financialcheat.mapper;
 
 import com.example.financialcheat.model.relationShip.UserProjectRelationShip;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.github.yulichang.base.MPJBaseMapper;
 
 /**
 * @author 宇宙无敌超级大帅哥
@@ -9,7 +10,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @createDate 2023-11-02 16:27:28
 * @Entity com.example.financialcheat.model.relationShip.UserProjectRelationShip
 */
-public interface UserProjectRelationShipMapper extends BaseMapper<UserProjectRelationShip> {
+public interface UserProjectRelationShipMapper extends MPJBaseMapper<UserProjectRelationShip> {
 
 }
 

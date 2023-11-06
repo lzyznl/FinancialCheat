@@ -1,4 +1,4 @@
-package com.example.financialcheat.model.vo;
+package com.example.financialcheat.model.vo.ProjectVo;
 
 import lombok.Data;
 

@@ -33,8 +33,10 @@ public class UserProjectRelationShip implements Serializable {
 0 - 队员
 1 - 队长
      */
-    private Integer position;
 
+    private int position;
+
+    private String deleteTime;
     /**
      * 0 - 未删除
      1 - 已删除
