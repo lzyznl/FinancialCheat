@@ -2,6 +2,9 @@ package com.example.financialcheat.service;
 
 import com.example.financialcheat.model.entity.Variable;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.financialcheat.model.vo.VariableVo.variableListVo;
+
+import java.util.List;
 
 /**
 * @author 宇宙无敌超级大帅哥
@@ -10,4 +13,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface VariableService extends IService<Variable> {
 
+    /**
+     * 获取某个变量库的所有变量
+     * @param fileId
+     * @return
+     */
+    List<variableListVo> variableList(long fileId);
 }
