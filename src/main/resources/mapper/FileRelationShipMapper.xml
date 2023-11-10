@@ -10,10 +10,11 @@
             <result property="fileName" column="fileName" jdbcType="VARCHAR"/>
             <result property="isFolder" column="isFolder" jdbcType="TINYINT"/>
             <result property="fileType" column="fileType" jdbcType="TINYINT"/>
+            <result property="projectId" column="projectId" jdbcType="BIGINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,parentId,fileName,
-        isFolder,fileType
+        isFolder,fileType,projectId
     </sql>
 </mapper>

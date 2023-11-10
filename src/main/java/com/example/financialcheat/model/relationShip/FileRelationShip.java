@@ -41,6 +41,8 @@ public class FileRelationShip implements Serializable {
      */
     private Integer fileType;
 
+    private Long projectId;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

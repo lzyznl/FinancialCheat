@@ -39,6 +39,18 @@ public class RuleController {
         return ResultUtils.success(ruleId,"新增成功！");
     }
 
+    @PostMapping("/update")
+    public BaseResponse<String> updateRule(@RequestBody UpdateRuleRequest request){
+        if (request==null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Integer ruleId = request.getRuleId();
+        String rule = request.getRule();
+        String ruleName = request.getRuleName();
+        return rulesService.updateRule(ruleId,rule,ruleName)?
+                ResultUtils.success("修改成功！"):ResultUtils.error(ErrorCode.OPERATION_ERROR);
+    }
+
     @GetMapping("/ruleStatus/get")
     public BaseResponse<List<RuleVO>> getAllRuleStatus(@RequestParam Integer projectId){
         if(projectId<0){

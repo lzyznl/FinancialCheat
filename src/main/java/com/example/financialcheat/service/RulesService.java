@@ -28,6 +28,17 @@ public interface RulesService extends IService<Rules> {
     Integer addNewRule( Long fileId,Long projectId, String rule, HttpServletRequest request);
 
     /**
+     * 修改规则
+     *
+     * @param ruleId
+     * @param rule
+     * @param ruleName
+     * @return
+     */
+    boolean updateRule(Integer ruleId,String rule,String ruleName);
+
+
+    /**
      * 根据项目id获取与之相关的所有规则的状态
      * @param projectId
      * @return
