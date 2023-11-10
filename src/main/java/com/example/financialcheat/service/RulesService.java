@@ -1,5 +1,6 @@
 package com.example.financialcheat.service;
 
+import cn.hutool.json.JSONObject;
 import com.example.financialcheat.model.entity.Rules;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.financialcheat.model.vo.RuleVo.RuleHistoryVo;
@@ -85,4 +86,12 @@ public interface RulesService extends IService<Rules> {
      * @return
      */
     String runOneRule(Rules rule);
+
+    /**
+     * 根据项目id按类型获取这个项目下的所有库
+     *
+     * @param projectId
+     * @return
+     */
+    JSONObject getFileByProjectId(Long projectId, Integer type);
 }

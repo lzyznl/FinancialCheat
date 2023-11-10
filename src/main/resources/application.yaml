@@ -19,8 +19,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://sh-cynosdbmysql-grp-dq41jv4m.sql.tencentcdb.com:26560/financialCheat
-    username: root
-    password: Lzy88888
+    username: PJH
+    password: Pjh123456
   # Redis ??
   # todo ????????????
   #  redis:

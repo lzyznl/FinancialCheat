@@ -1,10 +1,15 @@
 package com.example.financialcheat.service.impl;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.financialcheat.common.ErrorCode;
@@ -230,6 +235,57 @@ public class RulesServiceImpl extends ServiceImpl<RulesMapper, Rules>
         JexlScript script = jexlEngine.createScript(String.valueOf(decodingRuleBody));
         Object execute = script.execute(mapContext);
         return execute.toString();
+    }
+
+    public static JSONArray convertToJsonArray(List<FileRelationShip> nodes, Map<Integer, List<FileRelationShip>> nodeMap) {
+        JSONArray jsonArray = JSONUtil.createArray();
+        for (FileRelationShip node : nodes) {
+            JSONObject jsonNode = JSONUtil.createObj()
+                    .set("id", node.getId())
+                    .set("fileName", node.getFileName())
+                    .set("isFolder", node.getIsFolder() == 1);
+            List<FileRelationShip> children = nodeMap.get(Math.toIntExact(node.getId()));
+            if (children != null && !children.isEmpty()) {
+                jsonNode.set("children", convertToJsonArray(children, nodeMap));
+            }
+            jsonArray.add(jsonNode);
+        }
+        return jsonArray;
+    }
+
+    public static JSONObject convertToJSONTree(List<FileRelationShip> fileNodes) {
+        List<FileRelationShip> rootNodes = new ArrayList<>();
+
+        // Group nodes by their parent ID
+        Map<Integer, List<FileRelationShip>> nodeMap = new HashMap<>();
+        for (FileRelationShip node : fileNodes) {
+            int parentId = Math.toIntExact(node.getParentId());
+            if (!nodeMap.containsKey(parentId)) {
+                nodeMap.put(parentId, new ArrayList<>());
+            }
+            nodeMap.get(parentId).add(node);
+        }
+
+        // Find root nodes
+        for (FileRelationShip node : fileNodes) {
+            if (node.getParentId() == 0) {
+                rootNodes.add(node);
+            }
+        }
+
+        // Convert to JSON
+        JSONObject jsonTree = new JSONObject();
+        jsonTree.set("data", convertToJsonArray(rootNodes, nodeMap));
+        return jsonTree;
+    }
+
+    @Override
+    public JSONObject getFileByProjectId(Long projectId, Integer type) {
+        List<FileRelationShip> allList = fileRelationShipService.query()
+                .eq("projectId", projectId)
+                .eq("fileType", type)
+                .list();
+        return convertToJSONTree(allList);
     }
 
 }

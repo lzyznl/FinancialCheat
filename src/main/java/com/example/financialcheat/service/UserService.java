@@ -3,8 +3,6 @@ package com.example.financialcheat.service;
 import com.example.financialcheat.model.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.financialcheat.model.vo.SafetyUser;
-import com.example.financialcheat.model.vo.SafetyUser;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
