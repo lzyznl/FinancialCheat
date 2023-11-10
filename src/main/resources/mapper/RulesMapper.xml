@@ -8,6 +8,7 @@
             <id property="id" column="id" jdbcType="INTEGER"/>
             <result property="userId" column="userId" jdbcType="INTEGER"/>
             <result property="rule" column="rule" jdbcType="VARCHAR"/>
+            <result property="ruleName" column="ruleName" jdbcType="VARCHAR"/>
             <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
             <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
             <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
@@ -16,8 +17,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,userId,rule,
+        id,userId,rule,ruleName,
         isDelete,projectId,
-        updateTime,createTime,status
+        updateTime,createTime,status,
     </sql>
 </mapper>

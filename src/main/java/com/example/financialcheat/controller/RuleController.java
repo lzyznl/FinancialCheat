@@ -8,6 +8,7 @@ import com.example.financialcheat.exception.BusinessException;
 import com.example.financialcheat.model.dto.rule.*;
 import com.example.financialcheat.model.vo.RuleVo.RuleHistoryVo;
 import com.example.financialcheat.model.vo.RuleVo.RuleVO;
+import com.example.financialcheat.model.vo.RuleVo.SingleRuleVO;
 import com.example.financialcheat.service.RulesService;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
@@ -25,18 +26,29 @@ public class RuleController {
     @Resource
     private RulesService rulesService;
 
-
-
     @PostMapping("/add")
     public BaseResponse<Integer> addRule(@RequestBody GetRuleAddRequest getRuleAddRequest, HttpServletRequest request) {
         Long fileId = getRuleAddRequest.getFileId();
         String rule = getRuleAddRequest.getRule();
+        String ruleName = getRuleAddRequest.getRuleName();
         Long projectId = getRuleAddRequest.getProjectId();
-        if (StringUtils.isBlank(rule)  || fileId < 0) {
+        if (StringUtils.isAnyBlank(rule,ruleName)  || fileId < 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Integer ruleId = rulesService.addNewRule(fileId,projectId , rule, request);
+        Integer ruleId = rulesService.addNewRule(fileId,projectId , rule,ruleName, request);
         return ResultUtils.success(ruleId,"新增成功！");
+    }
+
+    @PostMapping("/update")
+    public BaseResponse<String> updateRule(@RequestBody UpdateRuleRequest request){
+        if (request==null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Integer ruleId = request.getRuleId();
+        String rule = request.getRule();
+        String ruleName = request.getRuleName();
+        return rulesService.updateRule(ruleId,rule,ruleName)?
+                ResultUtils.success("修改成功！"):ResultUtils.error(ErrorCode.OPERATION_ERROR);
     }
 
     @GetMapping("/ruleStatus/get")
@@ -85,13 +97,11 @@ public class RuleController {
     }
 
     @GetMapping("/ruleStatus/delete")
-    public BaseResponse<Boolean> deleteHistory(@RequestBody DeleteRuleRequest deleteRuleRequest){
-        long ruleId = deleteRuleRequest.getRuleId();
-        long projectId = deleteRuleRequest.getProjectId();
-        if(ruleId<0||projectId<0){
+    public BaseResponse<Boolean> deleteHistory(@RequestParam Long ruleId){
+        if(ruleId<0){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Boolean fact = rulesService.deleteRule(projectId, ruleId);
+        Boolean fact = rulesService.deleteRule(ruleId);
         return ResultUtils.success(fact,"删除规则成功");
     }
 
@@ -107,5 +117,23 @@ public class RuleController {
         }
         List<String> ans = rulesService.runRules(type, id);
         return ResultUtils.success(ans);
+    }
+
+    @PostMapping("/get")
+    public BaseResponse<List<SingleRuleVO>> getRule(@RequestParam Long fileId,@RequestParam Integer fileType){
+        if(fileId<0||fileType<0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        List<SingleRuleVO> singleRuleVOS = rulesService.getRule(fileId, fileType);
+        return ResultUtils.success(singleRuleVOS);
+    }
+
+    @PostMapping("/joinToSet")
+    public BaseResponse<String> joinToSet(@RequestParam Long ruleId,@RequestParam Long fileId){
+        if(ruleId<0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        return rulesService.joinToSet(ruleId,fileId)?
+                ResultUtils.success("添加成功！"):ResultUtils.error(ErrorCode.OPERATION_ERROR);
     }
 }

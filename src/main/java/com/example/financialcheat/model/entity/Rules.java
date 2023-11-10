@@ -30,6 +30,9 @@ public class Rules implements Serializable {
     private String rule;
 
 
+    private String ruleName;
+
+
     /**
      * 
      */

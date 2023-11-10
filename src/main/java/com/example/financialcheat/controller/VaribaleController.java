@@ -5,7 +5,9 @@ import com.example.financialcheat.common.BaseResponse;
 import com.example.financialcheat.common.ErrorCode;
 import com.example.financialcheat.common.ResultUtils;
 import com.example.financialcheat.exception.BusinessException;
-import com.example.financialcheat.model.dto.Variable.getVariableListRequest;
+import com.example.financialcheat.model.dto.Variable.AddVariableRequest;
+import com.example.financialcheat.model.dto.Variable.GetVariableListRequest;
+import com.example.financialcheat.model.dto.Variable.UpdateVariableRequest;
 import com.example.financialcheat.model.entity.Variable;
 import com.example.financialcheat.model.relationShip.FileRelationShip;
 import com.example.financialcheat.model.vo.VariableVo.variableListVo;
@@ -30,29 +32,59 @@ public class VaribaleController {
     private FileRelationShipService fileRelationShipService;
 
     @PostMapping("/get")
-    public BaseResponse<List<variableListVo>> getVariableList(@RequestBody getVariableListRequest getVariableListRequest){
+    public BaseResponse<List<variableListVo>> getVariableList(@RequestBody GetVariableListRequest getVariableListRequest) {
         long fileId = getVariableListRequest.getFileId();
-        if(fileId<0){
+        if (fileId < 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         List<variableListVo> list = variableService.variableList(fileId);
-        return ResultUtils.success(list,"获取变量成功");
+        return ResultUtils.success(list, "获取变量成功");
     }
 
     @GetMapping("/delete")
-    public BaseResponse<Boolean> deleteVariable(@RequestParam("variableId") long variableId){
-        if(variableId<0){
+    public BaseResponse<Boolean> deleteVariable(@RequestParam("variableId") long variableId) {
+        if (variableId < 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        return variableService.remove(new QueryWrapper<Variable>().eq("id",variableId))?ResultUtils.success(true,"删除成功"):ResultUtils.error(500,"删除失败");
+        return variableService.remove(new QueryWrapper<Variable>().eq("id", variableId)) ? ResultUtils.success(true, "删除成功") : ResultUtils.error(500, "删除失败");
     }
 
     @GetMapping("/deleteSet")
-    public BaseResponse<Boolean> deleteSet(@RequestParam("fileId") long fileId){
-        if(fileId<0){
+    public BaseResponse<Boolean> deleteSet(@RequestParam("fileId") long fileId) {
+        if (fileId < 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        return fileRelationShipService.remove(new QueryWrapper<FileRelationShip>().eq("id",fileId))?ResultUtils.success(true,"删除成功"):ResultUtils.error(500,"删除失败");
+        return fileRelationShipService.remove(new QueryWrapper<FileRelationShip>().eq("id", fileId)) ? ResultUtils.success(true, "删除成功") : ResultUtils.error(500, "删除失败");
+    }
+
+
+    @PostMapping("/add")
+    public BaseResponse<String> add(@RequestBody AddVariableRequest request) {
+        if (request == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        String variableName = request.getVariableName();
+        String variableType = request.getVariableType();
+        String description = request.getDescription();
+        String value = request.getValue();
+        Long fileId = request.getFileId();
+        return variableService.add(variableName, variableType, description, value, fileId) ?
+                ResultUtils.success("新增成功！") : ResultUtils.error(ErrorCode.OPERATION_ERROR);
+    }
+
+
+    @PostMapping("/update")
+    public BaseResponse<String> update(@RequestBody UpdateVariableRequest request) {
+        if (request == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Long id = request.getId();
+        String variableName = request.getVariableName();
+        String variableType = request.getVariableType();
+        String description = request.getDescription();
+        String value = request.getValue();
+        return variableService.update(id,variableName,variableType,description,value)?
+                ResultUtils.success("修改成功！") : ResultUtils.error(ErrorCode.OPERATION_ERROR);
     }
 
 }

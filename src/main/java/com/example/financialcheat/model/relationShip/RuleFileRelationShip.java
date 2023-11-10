@@ -27,9 +27,11 @@ public class RuleFileRelationShip implements Serializable {
     private Long ruleId;
 
     /**
-     * 
+     *
      */
     private Long fileId;
+
+    private long setId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

@@ -5,6 +5,7 @@ import com.example.financialcheat.model.entity.Rules;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.financialcheat.model.vo.RuleVo.RuleHistoryVo;
 import com.example.financialcheat.model.vo.RuleVo.RuleVO;
+import com.example.financialcheat.model.vo.RuleVo.SingleRuleVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -23,9 +24,21 @@ public interface RulesService extends IService<Rules> {
      * @param fileId
      * @param projectId
      * @param rule
+     * @param ruleName
      * @return
      */
-    Integer addNewRule( Long fileId,Long projectId, String rule, HttpServletRequest request);
+    Integer addNewRule( Long fileId,Long projectId, String rule,String ruleName, HttpServletRequest request);
+
+    /**
+     * 修改规则
+     *
+     * @param ruleId
+     * @param rule
+     * @param ruleName
+     * @return
+     */
+    boolean updateRule(Integer ruleId,String rule,String ruleName);
+
 
     /**
      * 根据项目id获取与之相关的所有规则的状态
@@ -65,12 +78,19 @@ public interface RulesService extends IService<Rules> {
 
 
     /**
+     * 获取某个决策集/规则库里的所有规则
+     * @param fileId
+     * @param fileType 0 - 规则库，2 - 决策集
+     * @return
+     */
+    List<SingleRuleVO>getRule(Long fileId,Integer fileType);
+
+    /**
      * 删除规则
-     * @param projectId
      * @param ruleId
      * @return
      */
-    Boolean deleteRule(long projectId,long ruleId);
+    Boolean deleteRule(long ruleId);
 
     /**
      * 运行规则或者规则集
@@ -94,4 +114,12 @@ public interface RulesService extends IService<Rules> {
      * @return
      */
     JSONObject getFileByProjectId(Long projectId, Integer type);
+
+    /**
+     * 把规则加到某个决策集中
+     * @param ruleId
+     * @param fileId
+     * @return
+     */
+    boolean joinToSet(Long ruleId,Long fileId);
 }

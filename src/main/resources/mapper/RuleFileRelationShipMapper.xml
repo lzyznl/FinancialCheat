@@ -8,9 +8,10 @@
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="ruleId" column="ruleId" jdbcType="BIGINT"/>
             <result property="fileId" column="fileId" jdbcType="BIGINT"/>
+            <result property="setId" column="setId" jdbcType="BIGINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,ruleId,fileId
+        id,ruleId,fileId,setId
     </sql>
 </mapper>

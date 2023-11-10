@@ -1,4 +1,5 @@
 package com.example.financialcheat.service.impl;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
@@ -14,7 +16,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.financialcheat.common.ErrorCode;
 import com.example.financialcheat.exception.BusinessException;
-import com.example.financialcheat.mapper.UserMapper;
 import com.example.financialcheat.model.entity.Rules;
 import com.example.financialcheat.model.entity.Ruleshistory;
 import com.example.financialcheat.model.entity.User;
@@ -23,7 +24,7 @@ import com.example.financialcheat.model.relationShip.FileRelationShip;
 import com.example.financialcheat.model.relationShip.RuleFileRelationShip;
 import com.example.financialcheat.model.vo.RuleVo.RuleHistoryVo;
 import com.example.financialcheat.model.vo.RuleVo.RuleVO;
-import com.example.financialcheat.model.vo.SafetyUser;
+import com.example.financialcheat.model.vo.RuleVo.SingleRuleVO;
 import com.example.financialcheat.model.vo.SafetyUser;
 import com.example.financialcheat.service.*;
 import com.example.financialcheat.mapper.RulesMapper;
@@ -31,26 +32,24 @@ import org.apache.commons.jexl3.JexlBuilder;
 import org.apache.commons.jexl3.JexlEngine;
 import org.apache.commons.jexl3.JexlScript;
 import org.apache.commons.jexl3.MapContext;
-import org.apache.tomcat.util.digester.Rule;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
-* @author 宇宙无敌超级大帅哥
-* @description 针对表【Rules(用户已经创建的规则集)】的数据库操作Service实现
-* @createDate 2023-11-05 17:24:29
-*/
+ * @author 宇宙无敌超级大帅哥
+ * @description 针对表【Rules(用户已经创建的规则集)】的数据库操作Service实现
+ * @createDate 2023-11-05 17:24:29
+ */
 @Service
 public class RulesServiceImpl extends ServiceImpl<RulesMapper, Rules>
-    implements RulesService{
+        implements RulesService {
 
     @Resource
     private UserService userService;
     @Resource
     private RulesMapper rulesMapper;
-
 
     @Resource
     private RuleshistoryService ruleshistoryService;
@@ -66,9 +65,9 @@ public class RulesServiceImpl extends ServiceImpl<RulesMapper, Rules>
 
 
     @Override
-    public Integer addNewRule(Long fileId, Long projectId, String rule, HttpServletRequest request) {
+    public Integer addNewRule(Long fileId, Long projectId, String rule, String ruleName, HttpServletRequest request) {
         SafetyUser loginUser = userService.getLoginUser(request);
-        if(loginUser==null){
+        if (loginUser == null) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         Long userId = loginUser.getUserId();
@@ -76,28 +75,40 @@ public class RulesServiceImpl extends ServiceImpl<RulesMapper, Rules>
         Rules rules = new Rules();
         rules.setUserId(Math.toIntExact(userId));
         rules.setRule(rule);
+        rules.setRuleName(ruleName);
         rules.setProjectId(projectId);
         rulesMapper.insert(rules);
         RuleFileRelationShip ship = new RuleFileRelationShip();
         ship.setRuleId((long) rules.getId());
         ship.setFileId(fileId);
+        ship.setSetId(0);
         ruleFileRelationShipService.save(ship);
         return rules.getId();
     }
 
     @Override
+    public boolean updateRule(Integer ruleId, String rule, String ruleName) {
+        return this.update()
+                .eq("id", ruleId)
+                .set("rule", rule)
+                .set("ruleName", ruleName)
+                .update();
+    }
+
+
+    @Override
     public List<RuleVO> getAllRuleStatusByProjectId(Integer projectId) {
-        List<RuleVO> ruleVOS=new ArrayList<>();
+        List<RuleVO> ruleVOS = new ArrayList<>();
         List<Rules> rules = this.query()
                 .eq("projectId", projectId)
                 .list();
 
-        for(Rules rule:rules){
+        for (Rules rule : rules) {
             RuleVO ruleVO = new RuleVO();
 
             ruleVO.setRuleId(rule.getId());
-            ruleVO.setCreateTime(DateUtil.format(rule.getCreateTime(),"yyyy-MM-dd"));
-            ruleVO.setUpdateTime(DateUtil.format(rule.getUpdateTime(),"yyyy-MM-dd"));
+            ruleVO.setCreateTime(DateUtil.format(rule.getCreateTime(), "yyyy-MM-dd"));
+            ruleVO.setUpdateTime(DateUtil.format(rule.getUpdateTime(), "yyyy-MM-dd"));
             ruleVO.setStatus(rule.getStatus());
 
             User user = userService.query()
@@ -108,13 +119,13 @@ public class RulesServiceImpl extends ServiceImpl<RulesMapper, Rules>
                     .eq("ruleId", rule.getId())
                     .list();
             List<Long> numbers = ruleFileShip.stream()
-                    .map(RuleFileRelationShip::getFileId)
+                    .map(RuleFileRelationShip::getSetId)
                     .collect(Collectors.toList());
             List<FileRelationShip> ships = fileRelationShipService.query()
                     .in("id", numbers)
                     .list();
-            List<String> fileNames=new ArrayList<>();
-            for (FileRelationShip ship:ships){
+            List<String> fileNames = new ArrayList<>();
+            for (FileRelationShip ship : ships) {
                 fileNames.add(ship.getFileName());
             }
             ruleVO.setRuleSet(fileNames);
@@ -126,14 +137,14 @@ public class RulesServiceImpl extends ServiceImpl<RulesMapper, Rules>
     @Override
     public Boolean changeRuleStatus(long projectId, long ruleId, int status) {
         QueryWrapper<Rules> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id",ruleId);
-        queryWrapper.eq("projectId",projectId);
+        queryWrapper.eq("id", ruleId);
+        queryWrapper.eq("projectId", projectId);
         Rules rules = rulesMapper.selectOne(queryWrapper);
         rules.setStatus(status);
         int i = rulesMapper.updateById(rules);
-        if(i>0){
+        if (i > 0) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -144,9 +155,9 @@ public class RulesServiceImpl extends ServiceImpl<RulesMapper, Rules>
         SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<RuleHistoryVo> ruleHistoryVoList = new ArrayList<>();
         QueryWrapper<Ruleshistory> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("projectId",projectId);
-        if(ruleId!=-1){
-            queryWrapper.eq("ruleId",ruleId);
+        queryWrapper.eq("projectId", projectId);
+        if (ruleId != -1) {
+            queryWrapper.eq("ruleId", ruleId);
         }
         List<Ruleshistory> historyList = ruleshistoryService.list(queryWrapper);
         historyList.forEach(ruleshistory -> {
@@ -170,12 +181,41 @@ public class RulesServiceImpl extends ServiceImpl<RulesMapper, Rules>
     }
 
     @Override
-    public Boolean deleteRule(long projectId, long ruleId) {
-        QueryWrapper<Rules> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id",ruleId);
-        queryWrapper.eq("projectId",projectId);
-        int delete = rulesMapper.delete(queryWrapper);
-        return delete >= 1;
+    public List<SingleRuleVO> getRule(Long fileId, Integer fileType) {
+
+        if (fileType == 0) {
+            List<RuleFileRelationShip> ships = ruleFileRelationShipService.query()
+                    .eq("fileId", fileId)
+                    .list();
+            List<Long> ruleIdSet = ships.stream()
+                    .map(RuleFileRelationShip::getRuleId)
+                    .collect(Collectors.toList());
+            List<Rules> rulesList = this.query()
+                    .in("id", ruleIdSet)
+                    .list();
+            return BeanUtil.copyToList(rulesList, SingleRuleVO.class);
+        } else {
+            List<RuleFileRelationShip> ships = ruleFileRelationShipService.query()
+                    .eq("setId", fileId)
+                    .list();
+            List<Long> ruleIdSet = ships.stream()
+                    .map(RuleFileRelationShip::getRuleId)
+                    .collect(Collectors.toList());
+            List<Rules> rulesList = this.query()
+                    .in("id", ruleIdSet)
+                    .list();
+            return BeanUtil.copyToList(rulesList, SingleRuleVO.class);
+        }
+
+    }
+
+    @Override
+    public Boolean deleteRule(long ruleId) {
+        rulesMapper.deleteById(ruleId);
+        QueryWrapper<RuleFileRelationShip> wrapper = new QueryWrapper<>();
+        wrapper.eq("ruleId", ruleId);
+        ruleFileRelationShipService.remove(wrapper);
+        return true;
     }
 
     @Override
@@ -185,9 +225,8 @@ public class RulesServiceImpl extends ServiceImpl<RulesMapper, Rules>
             case 0://单条规则
                 Rules rule = this.getById(id);
                 ans.add(runOneRule(rule));
-            case  1://一组规则
+            case 1://一组规则
                 List<Rules> rules = rulesMapper.selectList(null);
-
 
 
         }
@@ -220,10 +259,10 @@ public class RulesServiceImpl extends ServiceImpl<RulesMapper, Rules>
                     tempStr.setLength(0);
                     //开始查数据库的变量
                     Variable var = variableService.query()
-                            .eq("fileId",number)
-                            .eq("variableName",letter)
+                            .eq("fileId", number)
+                            .eq("variableName", letter)
                             .one();
-                    mapContext.set(letter,Integer.parseInt(var.getValue()));
+                    mapContext.set(letter, Integer.parseInt(var.getValue()));
                     decodingRuleBody.append(letter);
                 }
             } else {
@@ -286,6 +325,15 @@ public class RulesServiceImpl extends ServiceImpl<RulesMapper, Rules>
                 .eq("fileType", type)
                 .list();
         return convertToJSONTree(allList);
+    }
+
+    @Override
+    public boolean joinToSet(Long ruleId, Long fileId) {
+        RuleFileRelationShip ship = new RuleFileRelationShip();
+        ship.setRuleId(ruleId);
+        ship.setFileId(0L);
+        ship.setSetId(fileId);
+        return ruleFileRelationShipService.save(ship);
     }
 
 }

@@ -9,5 +9,21 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2023-11-05 17:24:29
 */
 public interface FileRelationShipService extends IService<FileRelationShip> {
+    /**
+     * 创建文件或者文件夹
+     * @param isFolder
+     * @param parentId
+     * @param fileName
+     * @param fileType
+     * @param projectId
+     * @return
+     */
+    boolean createFile(Integer isFolder,Long parentId,String fileName,Integer fileType,Long projectId);
 
+    /**
+     * 删除文件（夹）
+     * @param fileId
+     * @return
+     */
+    boolean deleteFile(Long fileId);
 }
