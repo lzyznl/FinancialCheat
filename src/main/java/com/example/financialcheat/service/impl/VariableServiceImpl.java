@@ -27,6 +27,11 @@ public class VariableServiceImpl extends ServiceImpl<VariableMapper, Variable>
     @Resource
     private VariableMapper variableMapper;
 
+    @Resource
+    private FileRelationShipMapper fileRelationShipMapper;
+
+    @Resource
+    private FileRelationShipService fileRelationShipService;
 
     @Override
     public List<variableListVo> variableList(long fileId) {
