@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.financialcheat.mapper.RuleFileRelationShipMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.financialcheat.model.relationShip.RuleFileRelationShip">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="ruleId" column="ruleId" jdbcType="BIGINT"/>
+            <result property="fileId" column="fileId" jdbcType="BIGINT"/>
+            <result property="setId" column="setId" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,ruleId,fileId,setId
+    </sql>
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.financialcheat.mapper.RuleshistoryMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.financialcheat.model.entity.Ruleshistory">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="projectId" column="projectId" jdbcType="BIGINT"/>
+            <result property="ruleId" column="ruleId" jdbcType="BIGINT"/>
+            <result property="userName" column="userNamed" jdbcType="VARCHAR"/>
+            <result property="event" column="event" jdbcType="VARCHAR"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,projectId,ruleId,
+        event,createTime
+    </sql>
+</mapper>
